@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>I'm Sorry</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff6f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hearts-container {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      transform: rotate(45deg);
+      animation: float 8s linear infinite;
+      opacity: 0.8;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+    }
+
+    .heart::before { top: -10px; left: 0; }
+    .heart::after { left: -10px; top: 0; }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    #sad-panda, #happy-panda {
+      width: 300px;
+      z-index: 2;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 20px;
+      margin: 20px;
+      z-index: 2;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #ok-btn { background-color: #4caf50; color: white; }
+    #no-btn { background-color: #f44336; color: white; position: relative; }
+
+    #happy-panda {
+      display: none;
+      animation: bounce 2s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    .glitter {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: gold;
+      border-radius: 50%;
+      animation: sparkle 1s ease infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes sparkle {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.5); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts-container" id="hearts-container"></div>
+
+  <img id="sad-panda" src="sad-panda.png" alt="Sad Panda">
+  
+  <div class="button-group" id="buttons">
+    <button id="ok-btn">It's OK</button>
+    <button id="no-btn">No</button>
+  </div>
+
+  <img id="happy-panda" src="happy-panda.png" alt="Happy Panda">
+
+  <audio id="bg-music" loop>
+    <source src="bgmusic.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Floating hearts
+    const heartContainer = document.getElementById('hearts-container');
+    for (let i = 0; i < 30; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      heart.style.top = Math.random() * 100 + 'vh';
+      heartContainer.appendChild(heart);
+    }
+
+    const noBtn = document.getElementById('no-btn');
+    const okBtn = document.getElementById('ok-btn');
+    const happyPanda = document.getElementById('happy-panda');
+    const sadPanda = document.getElementById('sad-panda');
+    const buttons = document.getElementById('buttons');
+    const music = document.getElementById('bg-music');
+
+    let noClickCount = 0;
+
+    noBtn.addEventListener('mouseover', () => {
+      if (noClickCount < 3) {
+        const x = Math.random() * (window.innerWidth - 100);
+        const y = Math.random() * (window.innerHeight - 100);
+        noBtn.style.position = 'absolute';
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+        noClickCount++;
+      }
+    });
+
+    okBtn.addEventListener('click', () => {
+      sadPanda.style.display = 'none';
+      buttons.style.display = 'none';
+      happyPanda.style.display = 'block';
+      music.currentTime = 0;  // restart from beginning
+      music.play().catch(() => console.log("Auto-play may be blocked."));
+
+      // Add sparkles
+      for (let i = 0; i < 20; i++) {
+        const glitter = document.createElement('div');
+        glitter.classList.add('glitter');
+        const x = happyPanda.offsetLeft + Math.random() * happyPanda.width;
+        const y = happyPanda.offsetTop + Math.random() * happyPanda.height;
+        glitter.style.left = `${x}px`;
+        glitter.style.top = `${y}px`;
+        glitter.style.zIndex = 3;
+        document.body.appendChild(glitter);
+        setTimeout(() => glitter.remove(), 2000); // auto-remove
+      }
+    });
+  </script>
+</body>
+</html>
